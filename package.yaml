@@ -35,6 +35,9 @@ ghc-options:
 
 library:
   source-dirs: src
+  exposed-modules:
+    - Lib
+    - Conf
 
 executables:
   wolfram:
