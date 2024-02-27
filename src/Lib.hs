@@ -1,6 +1,6 @@
-module Lib
-    ( someFunc
-    ) where
+module Lib (wolfram) where
 
-someFunc :: IO ()
-someFunc = putStrLn "someFunc"
+import Conf (Conf)
+
+wolfram :: Conf -> IO ()
+wolfram = print
