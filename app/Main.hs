@@ -4,7 +4,10 @@ import System.Exit (exitWith, exitSuccess, ExitCode(ExitFailure))
 import System.IO (hPutStrLn, stderr)
 
 import Conf (getConf, Conf(Conf, rule))
-import Lib (wolfram)
+import Lib (Line, showLine, wolfram)
+
+printLines :: Conf -> [Line] -> IO ()
+printLines conf = mapM_ (putStrLn . showLine conf)
 
 main :: IO ()
 main = do
@@ -12,5 +15,5 @@ main = do
     ret <- case conf of
         Nothing -> hPutStrLn stderr "Invalid arguments" >> exitWith (ExitFailure 84)
         Just Conf {rule=Nothing} -> hPutStrLn stderr "No rule specified, use `--rule <rule number>'" >> exitWith (ExitFailure 84)
-        Just config -> wolfram config
+        Just config -> (printLines config <$> wolfram config)
     ret >> exitSuccess
