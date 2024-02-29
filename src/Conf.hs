@@ -3,8 +3,10 @@ module Conf (Conf(Conf, rule, start, width, iterations, offset), getConf) where
 import System.Environment (getArgs)
 import Text.Read (readMaybe)
 
+import Rule (Rule, maybeRule)
+
 data Conf = Conf {
-    rule :: Maybe Int,
+    rule :: Maybe Rule,
     start :: Int,
     iterations :: Maybe Int,
     width :: Int,
@@ -15,13 +17,9 @@ maybePositive :: Int -> Maybe Int
 maybePositive x | x > 0 = Just x
                 | otherwise = Nothing
 
-maybeByte :: Int -> Maybe Int
-maybeByte x | 0 < x && x < 255 = Just x
-            | otherwise = Nothing
-
 readConf :: Conf -> [String] -> Maybe Conf
 readConf c [] = Just c
-readConf c ("--rule":r:xs) = (\x -> readConf c {rule = Just x} xs) =<< maybeByte =<< readMaybe r
+readConf c ("--rule":r:xs) = (\x -> readConf c {rule = Just x} xs) =<< maybeRule =<< readMaybe r
 readConf c ("--start":s:xs) = (\x -> readConf c {start = x} xs) =<< maybePositive =<< readMaybe s
 readConf c ("--lines":i:xs) = (\x -> readConf c {iterations = Just x} xs) =<< maybePositive =<< readMaybe i
 readConf c ("--window":w:xs) = (\x -> readConf c {width = x} xs) =<< maybePositive =<< readMaybe w
