@@ -38,6 +38,7 @@ library:
   exposed-modules:
     - Lib
     - Conf
+    - Rule
 
 executables:
   wolfram:

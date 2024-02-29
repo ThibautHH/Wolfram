@@ -27,6 +27,7 @@ library
   exposed-modules:
       Lib
       Conf
+      Rule
   other-modules:
       Paths_Wolfram
   autogen-modules:
