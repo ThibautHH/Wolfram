@@ -1,3 +1,10 @@
+{-
+-- EPITECH PROJECT, 2024
+-- Wolfram
+-- File description:
+-- Main library
+-}
+
 {-# LANGUAGE NamedFieldPuns #-}
 
 module Lib (Line, showLine, wolfram) where
