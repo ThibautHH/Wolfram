@@ -1,3 +1,10 @@
+{-
+-- EPITECH PROJECT, 2024
+-- Wolfram
+-- File description:
+-- Rule
+-}
+
 module Rule (Rule(Rule, r111, r110, r101, r100, r011, r010, r001, r000), maybeRule) where
 
 import Data.Bits ((.&.), complement)

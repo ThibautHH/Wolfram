@@ -1,3 +1,10 @@
+{-
+-- EPITECH PROJECT, 2024
+-- Wolfram
+-- File description:
+-- Configuration
+-}
+
 module Conf (Conf(Conf, rule, start, width, iterations, offset), getConf) where
 
 import System.Environment (getArgs)
@@ -19,11 +26,16 @@ maybePositive x | x > 0 = Just x
 
 readConf :: Conf -> [String] -> Maybe Conf
 readConf c [] = Just c
-readConf c ("--rule":r:xs) = (\x -> readConf c {rule = Just x} xs) =<< maybeRule =<< readMaybe r
-readConf c ("--start":s:xs) = (\x -> readConf c {start = x} xs) =<< maybePositive =<< readMaybe s
-readConf c ("--lines":i:xs) = (\x -> readConf c {iterations = Just x} xs) =<< maybePositive =<< readMaybe i
-readConf c ("--window":w:xs) = (\x -> readConf c {width = x} xs) =<< maybePositive =<< readMaybe w
-readConf c ("--move":m:xs) = (\x -> readConf c {offset = x} xs) =<< readMaybe m
+readConf c ("--rule":r:xs) = (\x -> readConf c {rule = Just x} xs)
+    =<< maybeRule =<< readMaybe r
+readConf c ("--start":s:xs) = (\x -> readConf c {start = x} xs)
+    =<< maybePositive =<< readMaybe s
+readConf c ("--lines":i:xs) = (\x -> readConf c {iterations = Just x} xs)
+    =<< maybePositive =<< readMaybe i
+readConf c ("--window":w:xs) = (\x -> readConf c {width = x} xs)
+    =<< maybePositive =<< readMaybe w
+readConf c ("--move":m:xs) = (\x -> readConf c {offset = x} xs)
+    =<< readMaybe m
 readConf _ _ = Nothing
 
 defaultConf :: Conf
