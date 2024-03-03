@@ -10,8 +10,6 @@
 module Lib (Line, showLine, wolfram) where
 
 import Control.Monad (join)
-import Data.Maybe (fromJust)
-import Data.Bifunctor (first)
 import Data.List.NonEmpty (NonEmpty ((:|)), fromList, toList)
 import qualified Data.List.NonEmpty as NE
 
@@ -82,14 +80,28 @@ iterateLine Line{left,middle,right} gen rule = Line
     (nextSide True (NE.last middle:right) (repeat Dead) gen rule)
 
 makeLines :: Conf -> Int -> NonEmpty Line -> NonEmpty Line
+makeLines Conf{rule=Nothing} _ ls = ls
+makeLines Conf{iterations=Nothing} _ ls = ls
 makeLines Conf{iterations=Just 1} _ ls = ls
-makeLines conf@(Conf{rule, start=0, iterations=Just i}) gen ls@(x:|_) = makeLines conf{iterations=Just (i - 1)} (gen + 1) $ iterateLine x gen (fromJust rule):|toList ls
-makeLines conf@(Conf{rule, start=0, iterations=Nothing}) gen ls@(x:|_) = makeLines conf (gen + 1) $ iterateLine x gen (fromJust rule):|toList ls
-makeLines conf@(Conf{rule, start}) gen (x:|_) = makeLines conf{start=start - 1} (gen + 1) $ NE.singleton $ iterateLine x gen (fromJust rule)
+makeLines conf@(Conf{rule=Just rule, start=0, iterations=Just i}) gen ls@(x:|_) = makeLines conf{iterations=Just (i - 1)} (gen + 1)
+    $ iterateLine x gen rule:|toList ls
+makeLines conf@(Conf{rule=Just rule, start}) gen (x:|_) = makeLines conf{start=start - 1} (gen + 1)
+    $ NE.singleton $ iterateLine x gen rule
 
-getMod :: Conf -> (NonEmpty Line -> [Line])
-getMod Conf{start=0} = reverse . toList
-getMod Conf{start=_} = reverse . NE.init
+makePrintLines :: Conf -> Int -> IO (NonEmpty Line) -> IO (NonEmpty Line)
+makePrintLines Conf{rule=Nothing} _ ls = ls
+makePrintLines conf@(Conf{rule=Just rule, start=0}) gen ls = do
+    stack <- ls
+    (putStrLn . showLine conf) $ NE.head stack
+    makePrintLines conf (gen + 1) $ pure $ iterateLine (NE.head stack) gen rule:|toList stack
+makePrintLines conf@(Conf{rule=Just rule, start}) gen ls = do
+    stack <- ls
+    makePrintLines conf{start=start - 1} (gen + 1) $ pure
+        $ NE.singleton $ iterateLine (NE.head stack) gen rule
 
-wolfram :: Conf -> IO [Line]
-wolfram conf = pure $ getMod conf . makeLines conf 0 $ NE.singleton defaultLine
+wolfram :: Conf -> IO ()
+wolfram conf@(Conf{iterations=Nothing}) = do
+    _ <- makePrintLines conf 0 $ pure $ NE.singleton defaultLine
+    return ()
+wolfram conf@(Conf{iterations=Just _}) = mapM_ (putStrLn . showLine conf) $ NE.reverse
+    $ makeLines conf 0 $ NE.singleton defaultLine
